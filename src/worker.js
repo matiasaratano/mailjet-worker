@@ -1,19 +1,46 @@
+// Tu Worker adaptado con CORS
 export default {
   async fetch(request, env, ctx) {
+    // Configurar headers de CORS
+    const corsHeaders = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Max-Age': '86400',
+    };
+
+    // Manejar peticiones OPTIONS (preflight)
+    if (request.method === 'OPTIONS') {
+      return new Response(null, {
+        status: 200,
+        headers: corsHeaders
+      });
+    }
+
+    // Solo permitir POST
     if (request.method !== 'POST') {
-      return new Response('Solo POST permitido', { status: 405 });
+      return new Response('Solo POST permitido', { 
+        status: 405,
+        headers: corsHeaders
+      });
     }
 
     let data;
     try {
       data = await request.json();
     } catch (e) {
-      return new Response('JSON inválido', { status: 400 });
+      return new Response('JSON inválido', { 
+        status: 400,
+        headers: corsHeaders
+      });
     }
 
     const { email, cursos = [] } = data;
     if (!email || cursos.length === 0) {
-      return new Response('Faltan datos', { status: 400 });
+      return new Response('Faltan datos', { 
+        status: 400,
+        headers: corsHeaders
+      });
     }
 
     const html = `
@@ -45,9 +72,15 @@ export default {
 
     const result = await response.json();
     if (response.ok) {
-      return new Response('Mail enviado', { status: 200 });
+      return new Response('Mail enviado', { 
+        status: 200,
+        headers: corsHeaders
+      });
     } else {
-      return new Response(JSON.stringify(result), { status: 500 });
+      return new Response(JSON.stringify(result), { 
+        status: 500,
+        headers: corsHeaders
+      });
     }
   }
 };
