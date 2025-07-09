@@ -34,22 +34,16 @@ export default {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        Messages: [
-          {
-            From: {
-              Email: 'info@madigital.com.ar',
-              Name: 'Talleres Gesell'
-            },
-            To: [{ Email: email, Name: email.split('@')[0] }],
-            Subject: 'Confirmación de inscripción a talleres',
-            HTMLPart: html
-          }
-        ]
+        Messages: [{
+          From: { Email: 'info@madigital.com.ar', Name: 'Talleres Gesell' },
+          To: [{ Email: email, Name: email.split('@')[0] }],
+          Subject: 'Confirmación de inscripción a talleres',
+          HTMLPart: html
+        }]
       })
     });
 
     const result = await response.json();
-
     if (response.ok) {
       return new Response('Mail enviado', { status: 200 });
     } else {

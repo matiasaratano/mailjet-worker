@@ -1,0 +1,3 @@
+name = "mailjet-worker"
+main = "src/worker.js"
+compatibility_date = "2025-07-09"
