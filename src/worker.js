@@ -1,4 +1,4 @@
-// Tu Worker adaptado con CORS
+// Tu Worker adaptado con CORS y mejor debugging
 export default {
   async fetch(request, env, ctx) {
     // Configurar headers de CORS
@@ -29,7 +29,7 @@ export default {
     try {
       data = await request.json();
     } catch (e) {
-      return new Response('JSON inválido', { 
+      return new Response('JSON inválido: ' + e.message, { 
         status: 400,
         headers: corsHeaders
       });
@@ -37,8 +37,16 @@ export default {
 
     const { email, cursos = [] } = data;
     if (!email || cursos.length === 0) {
-      return new Response('Faltan datos', { 
+      return new Response('Faltan datos - Email: ' + email + ', Cursos: ' + JSON.stringify(cursos), { 
         status: 400,
+        headers: corsHeaders
+      });
+    }
+
+    // Verificar variables de entorno
+    if (!env.MJ_API_KEY || !env.MJ_SECRET_KEY) {
+      return new Response('Credenciales de Mailjet no configuradas. API_KEY: ' + (env.MJ_API_KEY ? 'OK' : 'FALTA') + ', SECRET_KEY: ' + (env.MJ_SECRET_KEY ? 'OK' : 'FALTA'), { 
+        status: 500,
         headers: corsHeaders
       });
     }
@@ -54,30 +62,38 @@ export default {
       <p>Gracias por participar!</p>
     `;
 
-    const response = await fetch('https://api.mailjet.com/v3.1/send', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Basic ' + btoa(`${env.MJ_API_KEY}:${env.MJ_SECRET_KEY}`),
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        Messages: [{
-          From: { Email: 'info@madigital.com.ar', Name: 'Talleres Gesell' },
-          To: [{ Email: email, Name: email.split('@')[0] }],
-          Subject: 'Confirmación de inscripción a talleres',
-          HTMLPart: html
-        }]
-      })
-    });
-
-    const result = await response.json();
-    if (response.ok) {
-      return new Response('Mail enviado', { 
-        status: 200,
-        headers: corsHeaders
+    try {
+      const response = await fetch('https://api.mailjet.com/v3.1/send', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Basic ' + btoa(`${env.MJ_API_KEY}:${env.MJ_SECRET_KEY}`),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          Messages: [{
+            From: { Email: 'info@madigital.com.ar', Name: 'Talleres Gesell' },
+            To: [{ Email: email, Name: email.split('@')[0] }],
+            Subject: 'Confirmación de inscripción a talleres',
+            HTMLPart: html
+          }]
+        })
       });
-    } else {
-      return new Response(JSON.stringify(result), { 
+
+      const result = await response.json();
+      
+      if (response.ok) {
+        return new Response('Mail enviado correctamente', { 
+          status: 200,
+          headers: corsHeaders
+        });
+      } else {
+        return new Response('Error de Mailjet: ' + JSON.stringify(result), { 
+          status: 500,
+          headers: corsHeaders
+        });
+      }
+    } catch (error) {
+      return new Response('Error al conectar con Mailjet: ' + error.message, { 
         status: 500,
         headers: corsHeaders
       });
