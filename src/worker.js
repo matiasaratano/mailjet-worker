@@ -52,15 +52,21 @@ export default {
     }
 
     const html = `
-      <p>Hola!</p>
-      <p>Confirmamos tu inscripción a los siguientes talleres:</p>
-      <ul>${cursos.map(c => `<li>${c}</li>`).join('')}</ul>
-      <p>Para confirmar tu lugar, realizá el pago:</p>
-      <p><b>CBU:</b> 0000003100000000000001<br>
-      <b>Alias:</b> talleres.gesell<br>
-      <b>Concepto:</b> ${email}</p>
-      <p>Gracias por participar!</p>
-    `;
+  <p>Hola!</p>
+  <p>Confirmamos tu pre-inscripción a los siguientes talleres:</p>
+  <ul>
+    ${cursos.map(c => `<li><b>ID:</b> ${c.id} - <b>Nombre:</b> ${c.nombre} - <b>Turno:</b> ${c.turno}</li>`).join('')}
+  </ul>
+  <p>Para confirmar tu lugar, realizá el pago:</p>
+  <p><b>CBU:</b> 0000003100000000000001<br>
+  <b>Alias:</b> talleres.gesell<br>
+  <b>Concepto:</b> ${email}</p>
+  <p>Una vez hecha la transferencia, por favor envianos a esta casilla de correo 
+  (<a href="mailto:info@madigital.com.ar">info@madigital.com.ar</a>) el comprobante de pago y el nombre del inscripto 
+  para evitar confusiones.</p>
+  <p>Gracias por participar!</p>
+`;
+
 
     try {
       const response = await fetch('https://api.mailjet.com/v3.1/send', {
@@ -73,7 +79,7 @@ export default {
           Messages: [{
             From: { Email: 'info@madigital.com.ar', Name: 'Talleres Gesell' },
             To: [{ Email: email, Name: email.split('@')[0] }],
-            Subject: 'Confirmación de inscripción a talleres',
+            Subject: 'Confirmación de pre-inscripción a talleres',
             HTMLPart: html
           }]
         })
