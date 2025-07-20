@@ -58,12 +58,13 @@ export default {
     ${cursos.map(c => `<li><b>ID:</b> ${c.id} - <b>Nombre:</b> ${c.nombre} - <b>Turno:</b> ${c.turno}</li>`).join('')}
   </ul>
   <p>Para confirmar tu lugar, realizá el pago:</p>
-  <p><b>CBU:</b> 0000003100000000000001<br>
-  <b>Alias:</b> talleres.gesell<br>
+  <b>Alias:</b> eltinglado<br>
+  <b>Asociación amigos de la cerámica de Villa Gesell. Cuit: 30-71190611-4. Mercadopago</b> <br>
   <b>Concepto:</b> ${email}</p>
   <p>Una vez hecha la transferencia, por favor envianos a esta casilla de correo 
   (<a href="mailto:info@madigital.com.ar">info@madigital.com.ar</a>) el comprobante de pago y el nombre del inscripto 
   para evitar confusiones.</p>
+  <b>Si tenes alguna duda, chequeá en preguntas frecuentes de nuestra web (https://webtmc.vercel.app/preguntas) o ponete en contacto por whatsapp al +549 2255 625446</b>
   <p>Gracias por participar!</p>
 `;
 
